@@ -1,8 +1,10 @@
 import time
 import json
 import wikipedia
+import pyowm
 from slackclient import SlackClient
 
+owm = pyowm.OWM('')# replace with your OWM key
 token = '' # replace with your slack token
 
 sc = SlackClient(token)
@@ -10,7 +12,7 @@ print sc.api_call("api.test")
 print sc.api_call("auth.test")
 
 print sc.api_call("chat.postMessage",
-                  username='wikiBot',
+                  username='4970WBot',
                   as_user='false',
                   icon_emoji=':bowtie:',
                   channel="C0JT331L0",
@@ -37,15 +39,14 @@ if sc.rtm_connect():
                             sc.api_call("chat.postMessage",
                                         username='WikiBot',
                                         as_user='false',
-                                        icon_emoji=':cloud:',
+                                        icon_emoji=':bowtie:',
                                         channel=evt["channel"],
                                         text="Hmm, I couldn't find that, try another term...")
-                    '''
                     if "weatherBot" in message [:11]:
+                    #print owm.daily_forecast("Minneapolis,us")
                         sc.api_call("chat.postMessage",
                                     username='WeatherBot',
                                     as_user='false',
-                                    icon_emoji=':bowtie:',
+                                    icon_emoji=':cloud:',
                                     channel=evt["channel"],
-                                    text="It is currently: ...")
-                    '''
+                                    text= "the current temperature is: " + str(owm.weather_at_place('Minneapolis,us').get_weather().get_temperature('fahrenheit')['temp']) + "F")
