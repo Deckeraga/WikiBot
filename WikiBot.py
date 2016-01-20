@@ -4,7 +4,7 @@ import wikipedia
 import pyowm
 from slackclient import SlackClient
 
-owm = pyowm.OWM('')# replace with your OWM key
+owm = pyowm.OWM('') # replace with your OWM key
 token = '' # replace with your slack token
 
 sc = SlackClient(token)
@@ -43,10 +43,23 @@ if sc.rtm_connect():
                                         channel=evt["channel"],
                                         text="Hmm, I couldn't find that, try another term...")
                     if "weatherBot" in message [:11]:
-                    #print owm.daily_forecast("Minneapolis,us")
-                        sc.api_call("chat.postMessage",
-                                    username='WeatherBot',
-                                    as_user='false',
-                                    icon_emoji=':cloud:',
-                                    channel=evt["channel"],
-                                    text= "the current temperature is: " + str(owm.weather_at_place('Minneapolis,us').get_weather().get_temperature('fahrenheit')['temp']) + "F")
+                        try:
+                            weather = owm.weather_at_place('Minneapolis,us').get_weather(); #replace with desired city
+                            sc.api_call("chat.postMessage",
+                                        username='WeatherBot',
+                                        as_user='false',
+                                        icon_emoji=':cloud:',
+                                        channel=evt["channel"],
+                                        text= "*Weather in Minneapolis* \n" +
+                                              "*Temperature:* " +
+                                               str(weather.get_temperature('fahrenheit')['temp']) + "F\n" +
+                                               "*Humidity:* " +
+                                               str(weather.get_humidity()) + "%\n" +
+                                               "*Status:* " + str(weather.get_detailed_status()))
+                        except:
+                            sc.api_call("chat.postMessage",
+                                        username='WeatherBot',
+                                        as_user='false',
+                                        icon_emoji=':cloud:',
+                                        channel=evt["channel"],
+                                        text= "I cannot retrieve the weather for some reason :( I'm sorry I have failed you...")
